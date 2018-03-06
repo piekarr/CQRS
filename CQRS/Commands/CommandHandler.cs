@@ -1,21 +1,20 @@
 ﻿using CQRS.Results;
-using System.Collections.Generic;
 
 namespace CQRS
 {
 	public abstract class CommandHandler<TCommand> : ICommandHandler<TCommand>
 		where TCommand : ICommand
 	{
-		private readonly IEnumerable<IValidator<TCommand>> _validators;
+		private readonly ICQRSObjectValidator<TCommand> _validator;
 
-		protected CommandHandler(IEnumerable<IValidator<TCommand>> validators)
+		protected CommandHandler(ICQRSObjectValidator<TCommand> validator)
 		{
-			_validators = validators;
+			_validator = validator;
 		}
 
 		public CommandResult Handle(TCommand command)
 		{
-			var validationResult = ValidateCommand(command);
+			var validationResult = _validator.ValidateObject(command);
 			if (!validationResult.IsValid)
 			{
 				return validationResult.ToCommandResult();
@@ -24,18 +23,5 @@ namespace CQRS
 		}
 
 		protected abstract CommandResult ExecuteCommand(TCommand command);
-
-		private ValidationResult ValidateCommand(TCommand command)
-		{
-			foreach (var validator in _validators)
-			{
-				var result = validator.Validate(command);
-				if (!result.IsValid)
-				{
-					return result;
-				}
-			}
-			return ValidationResult.Success();
-		}
 	}
 }
