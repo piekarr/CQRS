@@ -22,14 +22,14 @@ namespace CQRS.Results
 			return new ValidationResult(errorCode, errorMessage);
 		}
 
-		public CommandResult ToCommandResult()
+		public CommandResult<TResult> ToCommandResult<TResult>()
 		{
-			return IsValid ? CommandResult.Success() : CommandResult.Error(ErrorCode, ErrorMessage);
+			return IsValid ? CommandResult<TResult>.Success(default(TResult)) : CommandResult<TResult>.Error(ErrorCode, ErrorMessage);
 		}
 
-		public QueryResult ToQueryResult()
+		public QueryResult<TResult> ToQueryResult<TResult>()
 		{
-			return IsValid ? QueryResult.Success() : QueryResult.Error(ErrorCode, ErrorMessage);
+			return IsValid ? QueryResult<TResult>.Success(default(TResult)) : QueryResult<TResult>.Error(ErrorCode, ErrorMessage);
 		}
 	}
 }

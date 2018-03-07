@@ -2,8 +2,8 @@
 
 namespace CQRS.Queries
 {
-	public abstract class QueryHandler<TQuery> : IQueryHandler<TQuery>
-		where TQuery : IQuery
+	public abstract class QueryHandler<TQuery,TResult> : IQueryHandler<TQuery, TResult>
+		where TQuery : IQuery<TResult>
 	{
 		private readonly ICQRSObjectValidator<TQuery> _validator;
 
@@ -12,16 +12,16 @@ namespace CQRS.Queries
 			_validator = validator;
 		}
 
-		public QueryResult Handle(TQuery query)
+		public QueryResult<TResult> Handle(TQuery query)
 		{
 			var validationResult = _validator.ValidateObject(query);
 			if (!validationResult.IsValid)
 			{
-				return validationResult.ToQueryResult();
+				return validationResult.ToQueryResult<TResult>();
 			}
 			return ExecuteQuery(query);
 		}
 
-		protected abstract QueryResult ExecuteQuery(TQuery query);
+		protected abstract QueryResult<TResult> ExecuteQuery(TQuery query);
 	}
 }

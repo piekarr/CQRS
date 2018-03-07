@@ -2,8 +2,8 @@
 
 namespace CQRS
 {
-	public abstract class CommandHandler<TCommand> : ICommandHandler<TCommand>
-		where TCommand : ICommand
+	public abstract class CommandHandler<TCommand, TResult> : ICommandHandler<TCommand,TResult>
+		where TCommand : ICommand<TResult>
 	{
 		private readonly ICQRSObjectValidator<TCommand> _validator;
 
@@ -12,16 +12,16 @@ namespace CQRS
 			_validator = validator;
 		}
 
-		public CommandResult Handle(TCommand command)
+		public CommandResult<TResult> Handle(TCommand command)
 		{
 			var validationResult = _validator.ValidateObject(command);
 			if (!validationResult.IsValid)
 			{
-				return validationResult.ToCommandResult();
+				return validationResult.ToCommandResult<TResult>();
 			}
 			return ExecuteCommand(command);
 		}
 
-		protected abstract CommandResult ExecuteCommand(TCommand command);
+		protected abstract CommandResult<TResult> ExecuteCommand(TCommand command);
 	}
 }
