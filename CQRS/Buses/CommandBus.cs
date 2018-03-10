@@ -1,6 +1,6 @@
 ﻿using CQRS.Results;
 
-namespace CQRS
+namespace CQRS.Buses
 {
 	public class CommandBus : ICommandBus
 	{
